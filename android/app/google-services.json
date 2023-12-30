@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "736737602796",
+    "firebase_url": "https://smart-bio-floc-4150e-default-rtdb.firebaseio.com",
+    "project_id": "smart-bio-floc-4150e",
+    "storage_bucket": "smart-bio-floc-4150e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736737602796:android:24789458e67596f74c89c9",
+        "android_client_info": {
+          "package_name": "com.bioflock"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmQLw4HBPTAL-xaH6LqYT52KAKwyZMupM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736737602796:android:3bc60ea6e3eb716b4c89c9",
+        "android_client_info": {
+          "package_name": "com.example.smartbiofloc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmQLw4HBPTAL-xaH6LqYT52KAKwyZMupM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
