@@ -120,7 +120,7 @@ class RealTimeDataBuilder extends StatelessWidget {
       value: waterLevel,
       axis: const GaugeAxis(
         min: 0,
-        max: 100,
+        max: 10,
         degrees: 360,
         style: GaugeAxisStyle(
           thickness: 15,
