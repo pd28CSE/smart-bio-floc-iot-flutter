@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'dart:math';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -149,7 +151,7 @@ class RealTimeDataBuilder extends StatelessWidget {
       builder: (BuildContext cntxt, Widget? child, double value) {
         return Center(
           child: Text(
-            'Water Level: ${value.toStringAsFixed(2)}',
+            'Water Level: ${(value * 10).toInt()}%',
             textAlign: TextAlign.center,
           ),
         );
@@ -214,186 +216,282 @@ class RealTimeDataBuilder extends StatelessWidget {
     );
   }
 
-  AnimatedRadialGauge pHBuildMeter(double pHValue) {
-    return AnimatedRadialGauge(
-      duration: const Duration(seconds: 1),
-      curve: Curves.elasticOut,
-      radius: 60,
-      value: pHValue,
-      axis: GaugeAxis(
-        min: 0,
-        max: 14,
-        degrees: 360,
-        style: const GaugeAxisStyle(
-          thickness: 15,
-          background: Color(0xFFDFE2EC),
-          segmentSpacing: 1,
-          cornerRadius: Radius.zero,
+  Widget pHBuildMeter(double pHValue) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Transform.rotate(
+          angle: -pi / 2,
+          child: Image.network(
+            'https://3.bp.blogspot.com/-6RP0IK53gus/XEilT9Wf8YI/AAAAAAAAH3M/2JCg40CzIPclNJRe0R_7e6fbqBk3srh3gCLcBGAs/s280/pH-scale.jpg',
+            width: 180,
+          ),
         ),
-        progressBar: const GaugeProgressBar.basic(
-          color: Color.fromARGB(255, 133, 152, 228),
-          placement: GaugeProgressPlacement.inside,
-        ),
-        segments: [
-          const GaugeSegment(
-            from: 0,
-            to: 2,
-            color: Colors.red,
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 2,
-            to: 3,
-            color: Colors.red.withOpacity(0.6),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 3,
-            to: 4,
-            color: Colors.red.withOpacity(0.3),
-            cornerRadius: Radius.zero,
-          ),
-          const GaugeSegment(
-            from: 4,
-            to: 5,
-            color: Colors.yellow,
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 5,
-            to: 6,
-            color: Colors.yellow.withOpacity(0.7),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 6,
-            to: 7,
-            color: Colors.yellow.withOpacity(0.5),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 7,
-            to: 8,
-            color: Colors.yellow.withOpacity(0.3),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 8,
-            to: 9,
-            color: Colors.blue.withOpacity(0.2),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 9,
-            to: 10,
-            color: Colors.blue.withOpacity(0.5),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 10,
-            to: 11,
-            color: Colors.blue.withOpacity(0.7),
-            cornerRadius: Radius.zero,
-          ),
-          const GaugeSegment(
-            from: 11,
-            to: 12,
-            color: Colors.blue,
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 12,
-            to: 13,
-            color: Colors.purple.withOpacity(0.5),
-            cornerRadius: Radius.zero,
-          ),
-          const GaugeSegment(
-            from: 13,
-            to: 14,
-            color: Colors.purple,
-            cornerRadius: Radius.zero,
-          ),
-        ],
-      ),
-      builder: (BuildContext cntxt, Widget? child, double value) {
-        final String tooltip = pHCondition(value);
-        return Center(
-          child: Tooltip(
-            message: tooltip,
-            child: Text(
-              'PH: ${value.toStringAsFixed(2)}',
-              textAlign: TextAlign.center,
+        AnimatedRadialGauge(
+          duration: const Duration(seconds: 1),
+          curve: Curves.elasticOut,
+          radius: 60,
+          value: pHValue,
+          axis: GaugeAxis(
+            min: 0,
+            max: 14,
+            degrees: 360,
+            style: const GaugeAxisStyle(
+              thickness: 15,
+              background: Color(0xFFDFE2EC),
+              segmentSpacing: 1,
+              cornerRadius: Radius.zero,
             ),
+            progressBar: const GaugeProgressBar.basic(
+              color: Color.fromARGB(255, 133, 152, 228),
+              placement: GaugeProgressPlacement.inside,
+            ),
+            segments: [
+              const GaugeSegment(
+                from: 0,
+                to: 2,
+                color: Colors.red,
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 2,
+                to: 3,
+                color: Colors.red.withOpacity(0.6),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 3,
+                to: 4,
+                color: Colors.red.withOpacity(0.3),
+                cornerRadius: Radius.zero,
+              ),
+              const GaugeSegment(
+                from: 4,
+                to: 5,
+                color: Colors.yellow,
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 5,
+                to: 6,
+                color: Colors.yellow.withOpacity(0.7),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 6,
+                to: 7,
+                color: Colors.yellow.withOpacity(0.5),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 7,
+                to: 8,
+                color: Colors.yellow.withOpacity(0.3),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 8,
+                to: 9,
+                color: Colors.blue.withOpacity(0.2),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 9,
+                to: 10,
+                color: Colors.blue.withOpacity(0.5),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 10,
+                to: 11,
+                color: Colors.blue.withOpacity(0.7),
+                cornerRadius: Radius.zero,
+              ),
+              const GaugeSegment(
+                from: 11,
+                to: 12,
+                color: Colors.blue,
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 12,
+                to: 13,
+                color: Colors.purple.withOpacity(0.5),
+                cornerRadius: Radius.zero,
+              ),
+              const GaugeSegment(
+                from: 13,
+                to: 14,
+                color: Colors.purple,
+                cornerRadius: Radius.zero,
+              ),
+            ],
           ),
-        );
-      },
+          builder: (BuildContext cntxt, Widget? child, double value) {
+            final String tooltip = pHCondition(value);
+            return Center(
+              child: Tooltip(
+                message: tooltip,
+                child: Text(
+                  'PH: ${value.toStringAsFixed(2)}',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 20),
+        Text(
+          pHCondition(pHValue),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 
-  AnimatedRadialGauge _buildTDSMeter(double tdsValue) {
-    return AnimatedRadialGauge(
-      duration: const Duration(seconds: 1),
-      curve: Curves.elasticOut,
-      radius: 60,
-      value: tdsValue,
-      axis: GaugeAxis(
-        min: 0,
-        max: 500,
-        degrees: 360,
-        style: const GaugeAxisStyle(
-          thickness: 15,
-          background: Color(0xFFDFE2EC),
-          segmentSpacing: 4,
+  Widget _buildTDSMeter(double tdsValue) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(
+          height: 80,
+          width: 150,
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.red.withOpacity(0.4),
+                    height: 10,
+                    width: 10,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Not good for drinking'),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.green,
+                    height: 10,
+                    width: 10,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Excellent for drinking'),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.green.withOpacity(0.6),
+                    height: 10,
+                    width: 10,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Good'),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.green.withOpacity(0.2),
+                    height: 10,
+                    width: 10,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Fair'),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.red,
+                    height: 10,
+                    width: 10,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text('Not good for drinking'),
+                ],
+              ),
+            ],
+          ),
         ),
-        progressBar: const GaugeProgressBar.rounded(
-          color: Color.fromARGB(255, 133, 152, 228),
-          placement: GaugeProgressPlacement.inside,
-        ),
-        segments: [
-          GaugeSegment(
-            from: 00,
-            to: 50,
-            color: Colors.red.withOpacity(0.4),
-            cornerRadius: Radius.zero,
-          ),
-          const GaugeSegment(
-            from: 50,
-            to: 150,
-            color: Colors.green,
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 150,
-            to: 250,
-            color: Colors.green.withOpacity(0.6),
-            cornerRadius: Radius.zero,
-          ),
-          GaugeSegment(
-            from: 250,
-            to: 300,
-            color: Colors.green.withOpacity(0.2),
-            cornerRadius: Radius.zero,
-          ),
-          const GaugeSegment(
-            from: 300,
-            to: 500,
-            color: Colors.red,
-            cornerRadius: Radius.zero,
-          ),
-        ],
-      ),
-      builder: (BuildContext cntxt, Widget? child, double value) {
-        final String tooltip = getTDSWaterCondition(value);
-        return Center(
-          child: Tooltip(
-            message: tooltip,
-            child: Text(
-              'TDS: ${value.toStringAsFixed(2)}',
-              textAlign: TextAlign.center,
+        const SizedBox(width: 5),
+        AnimatedRadialGauge(
+          duration: const Duration(seconds: 1),
+          curve: Curves.elasticOut,
+          radius: 60,
+          value: tdsValue,
+          axis: GaugeAxis(
+            min: 0,
+            max: 500,
+            degrees: 360,
+            style: const GaugeAxisStyle(
+              thickness: 15,
+              background: Color(0xFFDFE2EC),
+              segmentSpacing: 4,
             ),
+            progressBar: const GaugeProgressBar.rounded(
+              color: Color.fromARGB(255, 133, 152, 228),
+              placement: GaugeProgressPlacement.inside,
+            ),
+            segments: [
+              GaugeSegment(
+                from: 00,
+                to: 50,
+                color: Colors.red.withOpacity(0.4),
+                cornerRadius: Radius.zero,
+              ),
+              const GaugeSegment(
+                from: 50,
+                to: 150,
+                color: Colors.green,
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 150,
+                to: 250,
+                color: Colors.green.withOpacity(0.6),
+                cornerRadius: Radius.zero,
+              ),
+              GaugeSegment(
+                from: 250,
+                to: 300,
+                color: Colors.green.withOpacity(0.2),
+                cornerRadius: Radius.zero,
+              ),
+              const GaugeSegment(
+                from: 300,
+                to: 500,
+                color: Colors.red,
+                cornerRadius: Radius.zero,
+              ),
+            ],
           ),
-        );
-      },
+          builder: (BuildContext cntxt, Widget? child, double value) {
+            // final String tooltip = getTDSWaterCondition(value);
+            return Center(
+              child: Text(
+                'TDS: ${value.toStringAsFixed(2)}',
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 50,
+          child: Text(
+            getTDSWaterCondition(tdsValue),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        )
+      ],
     );
   }
 
