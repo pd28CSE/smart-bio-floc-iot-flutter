@@ -59,6 +59,19 @@ class _MyHomePageState extends State<MyHomePage> {
           widget.title,
           style: Theme.of(context).textTheme.headlineMedium,
         ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext cntxt) => const PHScaleBuilder(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.analytics_outlined, color: Colors.black),
+          )
+        ],
       ),
       body: Center(
         child: RealTimeDataBuilder(realTimeDatabase: realTimeDatabase),
@@ -100,7 +113,7 @@ class RealTimeDataBuilder extends StatelessWidget {
               _buildTemperatureMeter(
                   double.parse('${data['BUBT']['temperature']}')),
               const SizedBox(height: 20),
-              pHBuildMeter(data['BUBT']['ph']),
+              pHBuildMeter(context, data['BUBT']['ph']),
               const SizedBox(height: 20),
               _buildWaterLevelMeter(
                   waterLevel: double.parse('${data['BUBT']['waterLevel']}')),
@@ -114,119 +127,136 @@ class RealTimeDataBuilder extends StatelessWidget {
     );
   }
 
-  AnimatedRadialGauge _buildWaterLevelMeter({required double waterLevel}) {
-    return AnimatedRadialGauge(
-      duration: const Duration(seconds: 1),
-      curve: Curves.decelerate,
-      radius: 77,
-      value: waterLevel,
-      axis: const GaugeAxis(
-        min: 0,
-        max: 10,
-        degrees: 360,
-        style: GaugeAxisStyle(
-          thickness: 15,
-          background: Color(0xFFDFE2EC),
-          segmentSpacing: 4,
-        ),
-        progressBar: GaugeProgressBar.basic(
-          color: Color.fromARGB(255, 175, 189, 243),
-          gradient: GaugeAxisGradient(
-            colors: [
-              Color.fromARGB(255, 170, 184, 241),
-              Color.fromARGB(255, 87, 117, 235),
-            ],
-          ),
-          placement: GaugeProgressPlacement.inside,
-        ),
-        segments: [
-          GaugeSegment(
-            from: 00,
-            to: 100,
-            color: Colors.white30,
-            cornerRadius: Radius.zero,
-          ),
-        ],
-      ),
-      builder: (BuildContext cntxt, Widget? child, double value) {
-        return Center(
-          child: Text(
-            'Water Level: ${(value * 10).toInt()}%',
-            textAlign: TextAlign.center,
-          ),
-        );
-      },
-    );
-  }
-
-  AnimatedRadialGauge _buildTemperatureMeter(double temperature) {
-    return AnimatedRadialGauge(
-      duration: const Duration(seconds: 1),
-      curve: Curves.elasticOut,
-      radius: 77,
-      value: temperature,
-      axis: GaugeAxis(
-        min: 0,
-        max: 100,
-        degrees: 360,
-        style: const GaugeAxisStyle(
-          thickness: 15,
-          background: Color(0xFFDFE2EC),
-          segmentSpacing: 4,
-        ),
-        progressBar: GaugeProgressBar.rounded(
-          gradient: GaugeAxisGradient(
-            colors: <Color>[
-              Colors.green.withOpacity(0.6),
-              Colors.red,
-              Colors.red,
-            ],
-            colorStops: const <double>[0.2, 0.6, 1],
-            tileMode: TileMode.clamp,
-          ),
-          // color: Color.fromARGB(255, 133, 152, 228),
-          placement: GaugeProgressPlacement.inside,
-        ),
-        segments: [
-          GaugeSegment(
-            from: 00,
-            to: 100,
-            // color: Colors.red.withOpacity(0.4),
-            gradient: GaugeAxisGradient(
-              colors: <Color>[
-                Colors.green.withOpacity(0.6),
-                Colors.red,
-                Colors.red,
-              ],
-              colorStops: const <double>[0.2, 0.6, 1],
-              tileMode: TileMode.clamp,
-            ),
-            cornerRadius: Radius.zero,
-          ),
-        ],
-      ),
-      builder: (BuildContext cntxt, Widget? child, double value) {
-        return Center(
-          child: Text(
-            'Temperature: ${value.toStringAsFixed(2)}',
-            textAlign: TextAlign.center,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget pHBuildMeter(double pHValue) {
+  Row _buildWaterLevelMeter({required double waterLevel}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Transform.rotate(
-          angle: -pi / 2,
-          child: Image.network(
-            'https://3.bp.blogspot.com/-6RP0IK53gus/XEilT9Wf8YI/AAAAAAAAH3M/2JCg40CzIPclNJRe0R_7e6fbqBk3srh3gCLcBGAs/s280/pH-scale.jpg',
-            width: 180,
+        AnimatedRadialGauge(
+          duration: const Duration(seconds: 1),
+          curve: Curves.decelerate,
+          radius: 77,
+          value: waterLevel,
+          axis: const GaugeAxis(
+            min: 0,
+            max: 10,
+            degrees: 360,
+            style: GaugeAxisStyle(
+              thickness: 15,
+              background: Color(0xFFDFE2EC),
+              segmentSpacing: 4,
+            ),
+            progressBar: GaugeProgressBar.basic(
+              color: Color.fromARGB(255, 175, 189, 243),
+              gradient: GaugeAxisGradient(
+                colors: [
+                  Color.fromARGB(255, 170, 184, 241),
+                  Color.fromARGB(255, 87, 117, 235),
+                ],
+              ),
+              placement: GaugeProgressPlacement.inside,
+            ),
+            segments: [
+              GaugeSegment(
+                from: 00,
+                to: 100,
+                color: Colors.white30,
+                cornerRadius: Radius.zero,
+              ),
+            ],
+          ),
+          builder: (BuildContext cntxt, Widget? child, double value) {
+            return Center(
+              child: Text(
+                'Water Level: ${(value * 10).toInt()}%',
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 10),
+        Text(
+          waterConditions(waterLevel * 10),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
           ),
         ),
+      ],
+    );
+  }
+
+  Row _buildTemperatureMeter(double temperature) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        AnimatedRadialGauge(
+          duration: const Duration(seconds: 1),
+          curve: Curves.elasticOut,
+          radius: 77,
+          value: temperature,
+          axis: GaugeAxis(
+            min: 0,
+            max: 100,
+            degrees: 360,
+            style: const GaugeAxisStyle(
+              thickness: 15,
+              background: Color(0xFFDFE2EC),
+              segmentSpacing: 4,
+            ),
+            progressBar: GaugeProgressBar.rounded(
+              gradient: GaugeAxisGradient(
+                colors: <Color>[
+                  Colors.green.withOpacity(0.6),
+                  Colors.red,
+                  Colors.red,
+                ],
+                colorStops: const <double>[0.2, 0.6, 1],
+                tileMode: TileMode.clamp,
+              ),
+              // color: Color.fromARGB(255, 133, 152, 228),
+              placement: GaugeProgressPlacement.inside,
+            ),
+            segments: [
+              GaugeSegment(
+                from: 00,
+                to: 100,
+                // color: Colors.red.withOpacity(0.4),
+                gradient: GaugeAxisGradient(
+                  colors: <Color>[
+                    Colors.green.withOpacity(0.6),
+                    Colors.red,
+                    Colors.red,
+                  ],
+                  colorStops: const <double>[0.2, 0.6, 1],
+                  tileMode: TileMode.clamp,
+                ),
+                cornerRadius: Radius.zero,
+              ),
+            ],
+          ),
+          builder: (BuildContext cntxt, Widget? child, double value) {
+            return Center(
+              child: Text(
+                'Temperature: ${value.toStringAsFixed(2)} \u2103',
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 20),
+        Text(
+          temperatureConditions(temperature),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget pHBuildMeter(BuildContext context, double pHValue) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
         AnimatedRadialGauge(
           duration: const Duration(seconds: 1),
           curve: Curves.elasticOut,
@@ -355,70 +385,6 @@ class RealTimeDataBuilder extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        SizedBox(
-          height: 80,
-          width: 150,
-          child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.red.withOpacity(0.4),
-                    height: 10,
-                    width: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('Not good for drinking'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.green,
-                    height: 10,
-                    width: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('Excellent for drinking'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.green.withOpacity(0.6),
-                    height: 10,
-                    width: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('Good'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.green.withOpacity(0.2),
-                    height: 10,
-                    width: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('Fair'),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Container(
-                    color: Colors.red,
-                    height: 10,
-                    width: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text('Not good for drinking'),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 5),
         AnimatedRadialGauge(
           duration: const Duration(seconds: 1),
           curve: Curves.elasticOut,
@@ -517,5 +483,267 @@ class RealTimeDataBuilder extends StatelessWidget {
     } else {
       return 'Alkaline';
     }
+  }
+
+  String temperatureConditions(double value) {
+    if (value > 25) {
+      return 'Very bad, Need to Change the water.';
+    } else if (value >= 20) {
+      return 'Best';
+    }
+    return 'Bad, Need to Change the water.';
+  }
+
+  String waterConditions(double value) {
+    if (value >= 80) {
+      return 'High';
+    } else if (value >= 50) {
+      return 'Medium';
+    } else if (value >= 15) {
+      return 'Low';
+    }
+    return 'Very Low';
+  }
+}
+
+class PHScaleBuilder extends StatelessWidget {
+  const PHScaleBuilder({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(
+          'Reference',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(10),
+        children: <Widget>[
+          const Center(
+            child: Text(
+              'Temperature',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: SizedBox(
+              width: 200,
+              height: 120,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        color: Colors.green,
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const SizedBox(
+                        width: 150,
+                        child: Text(
+                          'Bad, Need to Change the water. (Less then 20\u2103).',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: Colors.green.withOpacity(0.5),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Best, (20\u2103 to 25\u2103).'),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        color: Colors.red,
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const SizedBox(
+                        width: 150,
+                        child: Text(
+                          'Very Bad, Need to Change the water. (greater then 25\u2103).',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Center(
+            child: Text(
+              'PH Scale',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          Image.network(
+            'https://3.bp.blogspot.com/-6RP0IK53gus/XEilT9Wf8YI/AAAAAAAAH3M/2JCg40CzIPclNJRe0R_7e6fbqBk3srh3gCLcBGAs/s280/pH-scale.jpg',
+          ),
+          const Center(
+            child: Text(
+              'Water Level',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: SizedBox(
+              height: 80,
+              width: 250,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: const Color.fromARGB(255, 153, 166, 221),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Very Low, (less then 15%).'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: const Color.fromARGB(255, 124, 142, 221),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Low, (greater then or equal 15%).'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: const Color.fromARGB(255, 87, 117, 235),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Medium, (greater then or equal 50%).'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: const Color.fromARGB(255, 87, 117, 235),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('High, (greater then or equal 80%).'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 30),
+          const Center(
+            child: Text(
+              'TDS Scale',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: SizedBox(
+              height: 80,
+              width: 150,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: Colors.red.withOpacity(0.4),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Not good for drinking'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: Colors.green,
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Excellent for drinking'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: Colors.green.withOpacity(0.6),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Good'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: Colors.green.withOpacity(0.2),
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Fair'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        color: Colors.red,
+                        height: 10,
+                        width: 10,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Not good for drinking'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
