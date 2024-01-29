@@ -537,7 +537,6 @@ class PHScaleBuilder extends StatelessWidget {
           Center(
             child: SizedBox(
               width: 200,
-              height: 120,
               child: Column(
                 children: <Widget>[
                   Row(
@@ -590,6 +589,7 @@ class PHScaleBuilder extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 20),
           const Center(
             child: Text(
               'PH Scale',
@@ -599,9 +599,11 @@ class PHScaleBuilder extends StatelessWidget {
               ),
             ),
           ),
-          Image.network(
-            'https://3.bp.blogspot.com/-6RP0IK53gus/XEilT9Wf8YI/AAAAAAAAH3M/2JCg40CzIPclNJRe0R_7e6fbqBk3srh3gCLcBGAs/s280/pH-scale.jpg',
+          Image.asset(
+            'images/ph-scale.jpg',
+            height: 170,
           ),
+          const SizedBox(height: 15),
           const Center(
             child: Text(
               'Water Level',
@@ -614,8 +616,7 @@ class PHScaleBuilder extends StatelessWidget {
           const SizedBox(height: 10),
           Center(
             child: SizedBox(
-              height: 80,
-              width: 250,
+              width: 280,
               child: Column(
                 children: <Widget>[
                   Row(
@@ -666,7 +667,7 @@ class PHScaleBuilder extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 15),
           const Center(
             child: Text(
               'TDS Scale',
@@ -679,8 +680,7 @@ class PHScaleBuilder extends StatelessWidget {
           const SizedBox(height: 10),
           Center(
             child: SizedBox(
-              height: 80,
-              width: 150,
+              width: 180,
               child: Column(
                 children: <Widget>[
                   Row(
